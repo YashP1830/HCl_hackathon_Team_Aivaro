@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import require_admin, get_current_user
+from app.api.dependencies import get_current_user, require_admin
 from app.db.session import get_db
 from app.models.entities import Book, User
 from app.schemas.books import BookCreate, BookRead, BookUpdate
 
-router = APIRouter(prefix="/books", tags=["books"])
+router = APIRouter(tags=["books"])
 
 
 def _read(book: Book) -> BookRead:
@@ -29,7 +29,7 @@ def _read(book: Book) -> BookRead:
     )
 
 
-@router.get("", response_model=list[BookRead])
+@router.get("/books", response_model=list[BookRead])
 def list_books(
     q: str | None = Query(default=None, max_length=200),
     page: int = Query(default=1, ge=1),
@@ -54,7 +54,7 @@ def list_books(
     return [_read(book) for book in books]
 
 
-@router.get("/{book_id}", response_model=BookRead)
+@router.get("/books/{book_id}", response_model=BookRead)
 def get_book(
     book_id: UUID,
     _current_user: User = Depends(get_current_user),
@@ -66,7 +66,7 @@ def get_book(
     return _read(book)
 
 
-@router.post("/admin", response_model=BookRead, status_code=status.HTTP_201_CREATED)
+@router.post("/admin/books", response_model=BookRead, status_code=status.HTTP_201_CREATED)
 def create_book(
     payload: BookCreate,
     _admin: User = Depends(require_admin),
@@ -76,12 +76,12 @@ def create_book(
     db.add(book)
     db.commit()
     db.refresh(book)
-    # Member C's embedding service will be wired into this point in the integration PR.
-    # Keeping status pending is intentional until the pgvector upsert has succeeded.
+    # Integration point: call Member C's embedding service after it is implemented.
+    # Pending is intentional until the pgvector upsert succeeds.
     return _read(book)
 
 
-@router.patch("/admin/{book_id}", response_model=BookRead)
+@router.patch("/admin/books/{book_id}", response_model=BookRead)
 def update_book(
     book_id: UUID,
     payload: BookUpdate,
@@ -105,5 +105,5 @@ def update_book(
         book.embedding_status = "pending"
     db.commit()
     db.refresh(book)
-    # A stock-only change intentionally does not invalidate the book embedding.
+    # A stock-only change intentionally does not invalidate the embedding.
     return _read(book)
