@@ -4,6 +4,8 @@
 >
 > **Important:** This README describes the intended architecture based on the project design discussed so far. Items such as exact database credentials, embedding model, email provider, support contact, package versions, and final API route names must be aligned with the actual repository before deployment. Example values and sample records are illustrative.
 
+> **Team development docs:** [Knowledge transfer and ownership rules](KNOWLEDGE_TRANSFER.md) · [Shared API contracts](API_CONTRACTS.md) · [Backend setup](backend/README.md).
+
 ## Table of Contents
 
 1. [Project Overview](#1-project-overview)
