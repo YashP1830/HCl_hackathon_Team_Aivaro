@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     def require_production_secret(self):
         if self.app_env.lower() in {"production", "prod"} and (
             self.jwt_secret_key == "development-only-change-this-secret"
+            or "replace-with" in self.jwt_secret_key.lower()
             or len(self.jwt_secret_key) < 32
         ):
             raise ValueError("Production requires a JWT_SECRET_KEY of at least 32 characters.")
