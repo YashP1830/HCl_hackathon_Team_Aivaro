@@ -13,6 +13,20 @@ router = APIRouter(tags=["books"])
 _DESCRIPTIVE_FIELDS = {"title", "author", "description", "genre", "publisher", "publication_year"}
 
 
+def _mark_embedding_failed(db: Session, book_id: UUID) -> str:
+    """Persist failed indexing without deleting the already-saved catalog row."""
+    try:
+        db.rollback()
+        persisted = db.get(Book, book_id)
+        if persisted is not None:
+            persisted.embedding_status = "failed"
+            db.commit()
+            db.refresh(persisted)
+    except Exception:
+        db.rollback()
+    return "failed"
+
+
 def _apply_embedding_sync(db: Session, book: Book) -> str:
     """Use Member C's sync_book_embedding(db=..., book=...) service when it is available.
 
@@ -24,7 +38,9 @@ def _apply_embedding_sync(db: Session, book: Book) -> str:
     except ModuleNotFoundError as exc:
         if exc.name in {"app.ai", "app.ai.embeddings"}:
             return "pending"
-        raise
+        return _mark_embedding_failed(db, book.id)
+    except Exception:
+        return _mark_embedding_failed(db, book.id)
 
     try:
         sync_book_embedding(db=db, book=book)
@@ -33,13 +49,7 @@ def _apply_embedding_sync(db: Session, book: Book) -> str:
         db.refresh(book)
         return "ready"
     except Exception:
-        db.rollback()
-        persisted = db.get(Book, book.id)
-        if persisted is not None:
-            persisted.embedding_status = "failed"
-            db.commit()
-            db.refresh(persisted)
-        return "failed"
+        return _mark_embedding_failed(db, book.id)
 
 
 def _response(book: Book) -> BookCreateResponse:
