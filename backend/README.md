@@ -27,6 +27,8 @@ The migration enables pgvector. The PostgreSQL server must already have the pgve
 - GET /api/v1/books/{book_id} — authenticated book details.
 - POST /api/v1/admin/books — admin-only create; saves the book before optional embedding sync.
 - PATCH /api/v1/admin/books/{book_id} — admin-only edit; descriptive changes request re-indexing, stock-only edits do not.
+- GET /api/v1/loans/me — returns only the authenticated user's loans.
+- POST /api/v1/loans/{loan_id}/return — permits return by the owning user or an admin, prevents duplicate returns, and increments stock under a row lock.
 
 Recommendation, FAQ, research, and analytics Pydantic contracts are centralized in app/schemas/__init__.py. Their public route wrappers must be connected when Member C provides the agreed service signatures. Do not claim those services are integrated until their tests pass.
 
@@ -36,7 +38,7 @@ Public registration intentionally has no role field and always assigns role=user
 
 UPDATE users SET role = 'admin' WHERE email = 'admin@example.com';
 
-Do not expose role assignment through public registration or trust a role sent by the frontend.
+Do not expose role assignment through public registration or trust a role sent by the frontend. Production settings reject the development JWT secret and require a secret of at least 32 characters.
 
 ## Contract and data-integrity rules
 
