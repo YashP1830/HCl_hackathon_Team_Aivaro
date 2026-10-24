@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* Custom theme overrides */
+:root {
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
+  --color-primary-light: #818cf8;
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --color-info: #0284c7;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Status badge colors */
+.badge-available {
+  @apply bg-emerald-100 text-emerald-800 border-emerald-200;
+}
+
+.badge-out-of-stock {
+  @apply bg-amber-100 text-amber-800 border-amber-200;
+}
+
+.badge-not-in-library {
+  @apply bg-slate-100 text-slate-600 border-slate-200;
+}
+
+/* Skeleton loader animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
