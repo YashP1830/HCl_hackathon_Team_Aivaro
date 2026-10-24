@@ -30,5 +30,5 @@ jobs:
         run: python -m compileall -q app migrations tests
         working-directory: backend
       - name: Run contract tests
-        run: pytest -q
+        run: python -m pytest -q
         working-directory: backend
