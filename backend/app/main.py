@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.api.router import api_router
 from app.core.config import settings
 from app.db.session import engine
 
@@ -19,6 +20,8 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
+
+app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 
 @app.get("/", tags=["health"])
@@ -40,7 +43,5 @@ def database_health() -> dict[str, str]:
             connection.execute(text("SELECT 1"))
     except SQLAlchemyError as exc:
         # Avoid returning connection details/secrets to callers.
-        raise __import__("fastapi").HTTPException(
-            status_code=503, detail="Database is unavailable"
-        ) from exc
+        raise HTTPException(status_code=503, detail="Database is unavailable") from exc
     return {"status": "ok", "database": "connected"}
