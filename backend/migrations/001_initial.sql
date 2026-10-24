@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS book_embeddings (
     embedding_model VARCHAR(160) NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS ix_book_embeddings_cosine
+    ON book_embeddings USING hnsw (embedding vector_cosine_ops);
 
 CREATE TABLE IF NOT EXISTS loans (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -64,6 +66,8 @@ CREATE TABLE IF NOT EXISTS faq_embeddings (
     embedding_model VARCHAR(160) NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS ix_faq_embeddings_cosine
+    ON faq_embeddings USING hnsw (embedding vector_cosine_ops);
 
 CREATE TABLE IF NOT EXISTS purchase_events (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
