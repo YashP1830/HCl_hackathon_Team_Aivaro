@@ -93,6 +93,16 @@ def update_book(
         raise HTTPException(status_code=404, detail="Book not found")
 
     changes = payload.model_dump(exclude_unset=True)
+    non_nullable_fields = {"title", "author", "description", "stock_quantity"}
+    null_fields = sorted(
+        field for field in non_nullable_fields if field in changes and changes[field] is None
+    )
+    if null_fields:
+        raise HTTPException(
+            status_code=422,
+            detail=f"These fields cannot be null: {', '.join(null_fields)}",
+        )
+
     descriptive_fields = {"title", "author", "description", "genre", "publisher", "publication_year"}
     needs_reembedding = any(
         field in changes and getattr(book, field) != value
