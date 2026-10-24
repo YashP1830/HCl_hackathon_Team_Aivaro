@@ -22,8 +22,8 @@ Open `http://localhost:8000/docs`.
 - `GET /`, `GET /health`, `GET /health/db`
 - `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
 - `GET /api/v1/books`, `GET /api/v1/books/{book_id}`
-- `POST /api/v1/books/admin` (admin token required)
-- `PATCH /api/v1/books/admin/{book_id}` (admin token required)
+- `POST /api/v1/admin/books` (admin token required)
+- `PATCH /api/v1/admin/books/{book_id}` (admin token required)
 
 The book-create route currently stores the catalog row with `embedding_status=pending`; wiring the AI embedding service is an integration task. Admin account bootstrap is intentionally not exposed as public registration. Create/promote the first admin through a controlled local-only database procedure, then remove/close that procedure before production.
 
