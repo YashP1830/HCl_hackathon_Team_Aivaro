@@ -29,8 +29,9 @@ The migration enables pgvector. The PostgreSQL server must already have the pgve
 - PATCH /api/v1/admin/books/{book_id} — admin-only edit; descriptive changes request re-indexing, stock-only edits do not.
 - GET /api/v1/loans/me — returns only the authenticated user's loans.
 - POST /api/v1/loans/{loan_id}/return — permits return by the owning user or an admin, prevents duplicate returns, and increments stock under a row lock.
+- POST /api/v1/recommendations, POST /api/v1/chat/faq, POST /api/v1/research/search, and GET /api/v1/admin/analytics — contract-visible endpoints that intentionally return HTTP 503 until Member C's service signatures are agreed and merged.
 
-Recommendation, FAQ, research, and analytics Pydantic contracts are centralized in app/schemas/__init__.py. Their public route wrappers must be connected when Member C provides the agreed service signatures. Do not claim those services are integrated until their tests pass.
+Recommendation, FAQ, research, and analytics Pydantic contracts are centralized in app/schemas/__init__.py. Do not claim AI/analytics features are integrated until the route wrappers call the real services and tests pass.
 
 ## Admin provisioning
 
